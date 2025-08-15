@@ -1,20 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  ArrowLeft, 
-  MapPin, 
-  Phone, 
-  MessageCircle, 
-  Clock,
-  User,
-  Star,
-  Shield,
-  AlertTriangle,
-  Navigation,
-  CheckCircle,
-  Car,
-  Timer,
-  SOS
-} from 'lucide-react';
+import { ArrowLeft, MapPin, Phone, MessageCircle, Clock, User, Star, Shield, AlertTriangle, Navigation, CheckCircle, Car, Timer, AArrowDown as SOS } from 'lucide-react';
 
 interface TrackingScreenProps {
   onNavigate: (screen: string) => void;
