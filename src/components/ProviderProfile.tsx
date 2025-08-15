@@ -228,7 +228,7 @@ const ProviderProfile: React.FC<ProviderProfileProps> = ({ onNavigate, language 
         <div className="px-6 pb-6">
           <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
             <button 
-              onClick={() => onNavigate('provider')}
+              onClick={() => onNavigate('tracking')}
               className="flex-1 bg-gradient-to-r from-indigo-600 to-purple-700 text-white py-4 rounded-2xl font-semibold hover:from-indigo-700 hover:to-purple-800 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
             >
               <Calendar className="w-5 h-5 inline mr-2" />

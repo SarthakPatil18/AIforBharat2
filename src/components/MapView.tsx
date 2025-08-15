@@ -259,7 +259,7 @@ const MapView: React.FC<MapViewProps> = ({ professional, onNavigate, language })
             {selectedProfessional && (
               <div className="sticky bottom-6">
                 <button 
-                  onClick={() => onNavigate('provider')}
+                  onClick={() => onNavigate('tracking')}
                   className="w-full bg-indigo-600 text-white py-4 rounded-2xl font-semibold hover:bg-indigo-700 transition-colors shadow-lg"
                 >
                   {t.bookNow} - {selectedProfessional.name}

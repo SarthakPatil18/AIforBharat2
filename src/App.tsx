@@ -6,8 +6,9 @@ import UserProfile from './components/UserProfile';
 import SearchResults from './components/SearchResults';
 import ServiceCategory from './components/ServiceCategory';
 import MapView from './components/MapView';
+import TrackingScreen from './components/TrackingScreen';
 
-type Screen = 'home' | 'search' | 'provider' | 'profile' | 'category' | 'map';
+type Screen = 'home' | 'search' | 'provider' | 'profile' | 'category' | 'map' | 'tracking';
 
 function App() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('home');
@@ -60,6 +61,8 @@ function App() {
         return <MapView professional={selectedProfessional} onNavigate={setCurrentScreen} language={language} />;
       case 'provider':
         return <ProviderProfile onNavigate={setCurrentScreen} language={language} />;
+      case 'tracking':
+        return <TrackingScreen onNavigate={setCurrentScreen} language={language} />;
       case 'profile':
         return <UserProfile onNavigate={setCurrentScreen} language={language} />;
       default:
