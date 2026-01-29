@@ -78,9 +78,11 @@ function App() {
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
             <div className="flex items-center">
-              <div className="w-10 h-10 bg-gradient-to-br from-indigo-600 to-purple-700 rounded-2xl flex items-center justify-center">
-                <Search className="w-5 h-5 text-white" />
-              </div>
+              <img 
+                src="/screenshot_2026-01-29_143224.png" 
+                alt="LocalLens" 
+                className="w-10 h-10 rounded-2xl"
+              />
               <div className="ml-3">
                 <span className="text-xl font-bold text-gray-900">LocalLens</span>
                 <div className="flex items-center text-xs text-gray-500">
