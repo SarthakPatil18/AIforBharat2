@@ -14,7 +14,9 @@ import {
   TrendingUp,
   Sparkles,
   Shield,
-  Clock
+  Clock,
+  Mic,
+  MicOff
 } from 'lucide-react';
 
 interface HomeScreenProps {
@@ -28,6 +30,8 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ onNavigate, onSearch, onCategor
   const [searchQuery, setSearchQuery] = useState('');
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+  const [recognition, setRecognition] = useState<SpeechRecognition | null>(null);
 
   const translations = {
     en: {
@@ -41,7 +45,10 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ onNavigate, onSearch, onCategor
       aiPowered: "AI-Powered Matching",
       verified: "100% Verified",
       warranty: "Service Warranty",
-      instantBooking: "Instant Booking"
+      instantBooking: "Instant Booking",
+      voiceSearch: "Voice Search",
+      listening: "Listening...",
+      speakNow: "Speak now"
     },
     hi: {
       welcome: 'विश्वसनीय स्थानीय सेवाएं खोजें',
@@ -54,7 +61,10 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ onNavigate, onSearch, onCategor
       aiPowered: "AI-संचालित मैचिंग",
       verified: "100% सत्यापित",
       warranty: "सेवा वारंटी",
-      instantBooking: "तत्काल बुकिंग"
+      instantBooking: "तत्काल बुकिंग",
+      voiceSearch: "आवाज़ खोज",
+      listening: "सुन रहा है...",
+      speakNow: "अब बोलें"
     }
   };
 
@@ -127,6 +137,38 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ onNavigate, onSearch, onCategor
     { icon: Clock, title: t.warranty, desc: language === 'en' ? 'Digital service warranty' : 'डिजिटल सेवा वारंटी' }
   ];
 
+  // Initialize speech recognition
+  useEffect(() => {
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const recognitionInstance = new SpeechRecognition();
+      
+      recognitionInstance.continuous = false;
+      recognitionInstance.interimResults = false;
+      recognitionInstance.lang = language === 'hi' ? 'hi-IN' : 'en-US';
+      
+      recognitionInstance.onstart = () => {
+        setIsListening(true);
+      };
+      
+      recognitionInstance.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        setSearchQuery(transcript);
+        setIsListening(false);
+      };
+      
+      recognitionInstance.onerror = () => {
+        setIsListening(false);
+      };
+      
+      recognitionInstance.onend = () => {
+        setIsListening(false);
+      };
+      
+      setRecognition(recognitionInstance);
+    }
+  }, [language]);
+
   useEffect(() => {
     if (searchQuery.length > 0) {
       const filtered = aiSuggestions.filter(suggestion =>
@@ -138,6 +180,18 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ onNavigate, onSearch, onCategor
       setShowSuggestions(false);
     }
   }, [searchQuery]);
+
+  const startVoiceSearch = () => {
+    if (recognition && !isListening) {
+      recognition.start();
+    }
+  };
+
+  const stopVoiceSearch = () => {
+    if (recognition && isListening) {
+      recognition.stop();
+    }
+  };
 
   const handleSearchSubmit = () => {
     if (searchQuery.trim()) {
@@ -169,9 +223,29 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ onNavigate, onSearch, onCategor
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleSearchSubmit()}
-                placeholder={t.searchPlaceholder}
-                className="w-full pl-16 pr-6 py-5 text-lg border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-lg transition-all bg-white"
+                placeholder={isListening ? t.listening : t.searchPlaceholder}
+                className={`w-full pl-16 pr-24 py-5 text-lg border-2 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-lg transition-all bg-white ${
+                  isListening ? 'border-red-300 bg-red-50' : 'border-gray-200'
+                }`}
               />
+              
+              {/* Voice Search Button */}
+              <button
+                onClick={isListening ? stopVoiceSearch : startVoiceSearch}
+                className={`absolute right-16 top-1/2 transform -translate-y-1/2 p-2 rounded-xl transition-all ${
+                  isListening 
+                    ? 'bg-red-500 text-white animate-pulse' 
+                    : 'bg-gray-100 text-gray-600 hover:bg-indigo-100 hover:text-indigo-600'
+                }`}
+                title={isListening ? t.listening : t.voiceSearch}
+              >
+                {isListening ? (
+                  <MicOff className="w-5 h-5" />
+                ) : (
+                  <Mic className="w-5 h-5" />
+                )}
+              </button>
+              
               {searchQuery && (
                 <button
                   onClick={handleSearchSubmit}
@@ -181,6 +255,17 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ onNavigate, onSearch, onCategor
                 </button>
               )}
             </div>
+
+            {/* Voice Search Indicator */}
+            {isListening && (
+              <div className="absolute top-full left-0 right-0 mt-2 bg-red-50 border border-red-200 rounded-xl p-4 text-center">
+                <div className="flex items-center justify-center mb-2">
+                  <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse mr-2"></div>
+                  <span className="text-red-700 font-medium">{t.listening}</span>
+                </div>
+                <p className="text-sm text-red-600">{t.speakNow}</p>
+              </div>
+            )}
 
             {/* AI Suggestions */}
             {showSuggestions && suggestions.length > 0 && (
